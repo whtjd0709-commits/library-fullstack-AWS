@@ -16,6 +16,9 @@ out/
 dist/
 build/
 target/
+app.jar
+backend-eb.zip
+META-INF/
 
 # env
 .env
