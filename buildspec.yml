@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto21
+  build:
+    commands:
+      - cd book-management-api
+      - sh ./gradlew test bootJar --no-daemon
+      - cd ..
+      - cp book-management-api/build/libs/book-management-api-1.0.0.jar app.jar
+
+artifacts:
+  files:
+    - Procfile
+    - app.jar

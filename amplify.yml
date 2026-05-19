@@ -1,0 +1,17 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - cd book-management-front
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: book-management-front/.next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - book-management-front/node_modules/**/*
