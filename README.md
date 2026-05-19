@@ -52,7 +52,6 @@ AWS Amplify, Elastic Beanstalk, RDS MySQL을 사용해 C 트랙 기준으로 배
 | Amazon EC2 | EB 환경 인스턴스 |
 | Elastic Load Balancing | EB 로드 밸런서 (환경 유형에 따라 포함) |
 | AWS IAM | EB EC2 인스턴스 프로파일, Amplify 서비스 역할 |
-| Amazon CloudWatch | EB·Amplify 로그 및 헬스 모니터링 |
 
 ## 아키텍처
 
