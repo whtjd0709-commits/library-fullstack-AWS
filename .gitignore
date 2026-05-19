@@ -7,15 +7,21 @@ Thumbs.db
 
 # dependencies
 node_modules/
+book-management-front/node_modules/
 
 # Next.js
 .next/
+book-management-front/.next/
 out/
+book-management-front/out/
+book-management-front/next-env.d.ts
 
 # build
 dist/
 build/
 target/
+book-management-api/.gradle/
+book-management-api/build/
 app.jar
 backend-eb.zip
 META-INF/
@@ -24,6 +30,10 @@ META-INF/
 .env
 .env.local
 .env.*.local
+book-management-front/.env
+book-management-front/.env.local
+book-management-front/.env.*.local
+!book-management-front/.env.example
 
 # logs
 *.log
