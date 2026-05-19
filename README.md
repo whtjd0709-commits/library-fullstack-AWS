@@ -33,13 +33,13 @@ AWS Amplify, Elastic Beanstalk, RDS MySQL을 사용해 C 트랙 기준으로 배
 
 ## 기술 스택
 
-| 영역 | 기술 |
-| --- | --- |
+| 영역 | 기술                                                                |
+| --- |-------------------------------------------------------------------|
 | Backend | Java 21, Spring Boot 3.4.5, Spring Web, Spring Data JPA, Actuator |
-| Database | Local H2, Production Amazon RDS MySQL |
-| Frontend | Next.js 16, React 19, TypeScript |
-| Build | Gradle Wrapper, npm |
-| Deploy | AWS Amplify, AWS Elastic Beanstalk |
+| Database | Production Amazon RDS MySQL                                       |
+| Frontend | Next.js 16, React 19, TypeScript                                  |
+| Build | Gradle Wrapper, npm                                               |
+| Deploy | AWS Amplify, AWS Elastic Beanstalk                                |
 
 ## AWS 서비스 목록
 
