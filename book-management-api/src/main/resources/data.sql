@@ -1,3 +1,8 @@
-INSERT INTO book (title, author, price, available) VALUES ('클라우드 네이티브 백엔드 실전', '김도윤', 33000, true);
-INSERT INTO book (title, author, price, available) VALUES ('초보자를 위한 리액트 & 타입스크립트', '이현우', 36000, true);
-INSERT INTO book (title, author, price, available) VALUES ('실무 중심 DevOps 입문', '윤지호', 18000, false);
+INSERT IGNORE INTO book (id, title, author, price, available)
+VALUES (1, 'Cloud Native Spring Boot', 'Kim Cloud', 33000, true);
+
+INSERT IGNORE INTO book (id, title, author, price, available)
+VALUES (2, 'Next.js Full Stack Guide', 'Lee Frontend', 36000, true);
+
+INSERT IGNORE INTO book (id, title, author, price, available)
+VALUES (3, 'Practical DevOps on AWS', 'Park DevOps', 18000, false);
