@@ -1,47 +1,41 @@
 # Book Management
 
-도서 정보를 조회·검색·등록·수정·삭제할 수 있는 풀스택 도서 관리 애플리케이션입니다.
+Spring Boot REST API와 Next.js 프론트엔드로 만든 도서 관리 애플리케이션입니다.
+
+## 배포 트랙
+
+- 선택 트랙: C. AWS Amplify + Elastic Beanstalk
+- Frontend: AWS Amplify
+- Backend: AWS Elastic Beanstalk, Java 21
+- Database: Amazon RDS MySQL 8.0, Private Subnet
 
 ## 기술 스택
 
-| 구분 | 기술 |
-|------|------|
-| **백엔드** | Java 21, Spring Boot 3.4.5, Spring Data JPA, Lombok |
-| **데이터베이스** | H2 (인메모리) |
-| **프론트엔드** | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| **빌드 도구** | Gradle (API), npm (Front) |
+| 영역 | 기술 |
+| --- | --- |
+| Backend | Java 21, Spring Boot 3.4.5, Spring Web, Spring Data JPA |
+| Database | Local H2, Production MySQL 8.0 on RDS |
+| Frontend | Next.js 16, React 19, TypeScript |
+| Build | Gradle Wrapper, npm |
+| Health Check | Spring Boot Actuator |
 
-## 사전 요구사항
+## 로컬 실행
 
-- **JDK 21** 이상
-- **Node.js 20** 이상 및 npm
-
-## 실행 방법
-
-### 1. 백엔드 (API)
-
-```bash
-cd book-management-api
-./gradlew bootRun
-```
-
-Windows:
+### Backend
 
 ```bash
 cd book-management-api
 gradlew.bat bootRun
 ```
 
-- API 서버: [http://localhost:8080](http://localhost:8080)
-- H2 콘솔: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)  
-  - JDBC URL: `jdbc:h2:mem:bookdb`  
-  - 사용자명: `sa` / 비밀번호: (비어 있음)
+- API: http://localhost:8080
+- Health: http://localhost:8080/actuator/health
+- H2 Console: http://localhost:8080/h2-console
+- JDBC URL: `jdbc:h2:mem:bookdb`
+- Username: `sa`
+- Password: empty
 
-시작 시 `data.sql`에 정의된 샘플 도서 3건이 자동으로 로드됩니다.
-
-### 2. 프론트엔드
-
-백엔드가 실행 중인 상태에서:
+### Frontend
 
 ```bash
 cd book-management-front
@@ -49,101 +43,67 @@ npm install
 npm run dev
 ```
 
-- 웹 UI: [http://localhost:3000](http://localhost:3000)
+- UI: http://localhost:3000
 
-API 주소를 변경하려면 `book-management-front` 디렉터리에 `.env.local` 파일을 만들고 다음을 설정합니다.
+프론트에서 사용할 API 주소를 바꾸려면 `book-management-front/.env.local`에 설정합니다.
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8080
 ```
 
-### 프로덕션 빌드
+## 운영 환경변수
 
-**백엔드**
+Elastic Beanstalk 환경변수:
 
-```bash
-cd book-management-api
-./gradlew bootJar
-java -jar build/libs/book-management-api-1.0.0.jar
+```env
+SPRING_PROFILES_ACTIVE=prod
+DB_HOST=your-rds-endpoint.ap-northeast-2.rds.amazonaws.com
+DB_PORT=3306
+DB_NAME=bookdb
+DB_USER=admin
+DB_PASS=your-password
+CORS_ORIGINS=https://your-amplify-domain.amplifyapp.com
 ```
 
-**프론트엔드**
+Amplify 환경변수:
 
-```bash
-cd book-management-front
-npm run build
-npm start
+```env
+NEXT_PUBLIC_API_URL=http://your-eb-env.ap-northeast-2.elasticbeanstalk.com
 ```
 
-## 프로젝트 구조
+## AWS 배포 메모
 
-```
-book-management/
-├── book-management-api/    # Spring Boot REST API
-└── book-management-front/  # Next.js 웹 클라이언트
-```
+1. VPC에 Public Subnet 2개, Private Subnet 2개를 구성합니다.
+2. RDS MySQL은 Private Subnet에 배치하고 Public Access를 비활성화합니다.
+3. RDS 보안그룹은 Elastic Beanstalk EC2 보안그룹에서 오는 3306 포트만 허용합니다.
+4. Elastic Beanstalk는 Java 21 플랫폼으로 생성하고 Health check path를 `/actuator/health`로 설정합니다.
+5. Amplify는 GitHub 저장소를 연결하고 `amplify.yml` 기준으로 `book-management-front`를 빌드합니다.
+6. Amplify 배포 후 생성된 HTTPS URL을 `CORS_ORIGINS`에 반영합니다.
 
-## API 엔드포인트
+## API
 
-기본 URL: `http://localhost:8080`
+기본 URL:
 
-
-### Book 객체
-
-```json
-{
-  "id": 1,
-  "title": "Clean Code",
-  "author": "Robert Martin",
-  "price": 33000,
-  "available": true
-}
+```text
+http://localhost:8080
 ```
 
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| `id` | `number` | 도서 ID (자동 생성, POST 시 생략 가능) |
-| `title` | `string` | 제목 (필수) |
-| `author` | `string` | 저자 (필수) |
-| `price` | `number` \| `null` | 가격 |
-| `available` | `boolean` | 대여 가능 여부 (기본값 `true`) |
+주요 엔드포인트:
 
-### 요청 예시
+| Method | Path | 설명 |
+| --- | --- | --- |
+| GET | `/api/books` | 도서 목록 조회 |
+| GET | `/api/books/{id}` | 도서 상세 조회 |
+| GET | `/api/books/search?title=keyword` | 제목 검색 |
+| POST | `/api/books` | 도서 등록 |
+| PUT | `/api/books/{id}` | 도서 수정 |
+| DELETE | `/api/books/{id}` | 도서 삭제 |
+| GET | `/actuator/health` | 서버 및 DB 상태 확인 |
 
-**도서 등록**
+## 배포 관련 파일
 
-```http
-POST /api/books
-Content-Type: application/json
-
-{
-  "title": "새 도서",
-  "author": "홍길동",
-  "price": 25000,
-  "available": true
-}
-```
-
-**제목 검색**
-
-```http
-GET /api/books/search?title=Java
-```
-
-**도서 수정**
-
-```http
-PUT /api/books/1
-Content-Type: application/json
-
-{
-  "title": "수정된 제목",
-  "author": "저자",
-  "price": 30000,
-  "available": false
-}
-```
-
-## CORS
-
-프론트엔드(`http://localhost:3000`)에서 API(`/api/**`)로의 요청이 허용되도록 설정되어 있습니다.
+- `amplify.yml`: Amplify 프론트엔드 빌드 설정
+- `buildspec.yml`: 백엔드 JAR 빌드 및 EB 산출물 생성
+- `Procfile`: Elastic Beanstalk Java 애플리케이션 실행 명령
+- `book-management-api/src/main/resources/schema.sql`: DB 테이블 생성
+- `book-management-api/src/main/resources/data.sql`: 초기 도서 데이터 3건
